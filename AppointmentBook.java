@@ -1,44 +1,102 @@
-public class AppointmentBook {
+public class AppointmentBook{
+
+
+    private boolean[][] schedule;
+
+    public AppointmentBook() 
+    {
+        schedule = new boolean[8][60];
+        for (int i = 0; i < 8; i++) 
+        {
+            for (int j = 0; j < 60; j++) 
+            {
+                schedule[i][j] = true;
+            }
+        }
+    }
+
+
+    private boolean isMinuteFree(int period, int minute) 
+    {
+        return schedule[period - 1][minute];
+    }
+
+    private void reserveBlock(int period, int startMinute, int duration) 
+    {
+        for (int i = startMinute; i < startMinute + duration; i++) 
+        {
+            schedule[period - 1][i] = false;
+        }
+    }
+
+
+    public int findFreeBlock(int period, int duration) 
+    {
+        int freeBlockCount = 0;
+
+        for (int minute = 0; minute < 60; minute++) 
+        {
+            if (isMinuteFree(period, minute)) 
+            {
+                freeBlockCount++;
+                if (freeBlockCount == duration) 
+                {
+                    return minute - duration + 1;
+                }
+            } else {
+                freeBlockCount = 0;
+            }
+        }
+        return -1;
+    }
+
+    public boolean makeAppointment(int startPeriod, int endPeriod, int duration) 
+    {
+        for (int period = startPeriod; period <= endPeriod; period++) 
+        {
+            int startMinute = findFreeBlock(period, duration);
+            if (startMinute != -1) 
+            {
+                reserveBlock(period, startMinute, duration);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void printSchedule() 
+    {
+        for (int i = 0; i < 8; i++) 
+        {
+            System.out.print("Period " + (i + 1) + ": ");
+            for (int j = 0; j < 60; j++) 
+            {
+                System.out.print(schedule[i][j] ? "." : "X");
+            }
+
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+        AppointmentBook book = new AppointmentBook();
+
+        // Test cases
+        System.out.println("Initial Schedule:");
+        book.printSchedule();
+
+        System.out.println("\nMaking appointment for 15 minutes in period 1...");
+        book.makeAppointment(1, 1, 15);
+        book.printSchedule();
+
+        System.out.println("\nMaking another appointment for 10 minutes in periods 1-2...");
+        book.makeAppointment(1, 2, 10);
+        book.printSchedule();
+
+        System.out.println("\nTrying to find a free block of 30 minutes in period 2...");
+        int startMinute = book.findFreeBlock(2, 30);
+        System.out.println("Start minute for free block in period 2: " + startMinute);
+    }
     
-    /**
-     * Returns true if minute in period is available for an appointment and returns
-     * false otherwise
-     * Preconditions: 1 <= period <= 8; 0 <= minute <= 59
-     */
-    private boolean isMinuteFree(int period, int minute) {
-        /* implementation not shown */ }
-
-    /**
-     * Marks the block of minutes that starts at startMinute in period and
-     * is duration minutes long as reserved for an appointment
-     * Preconditions: 1 <= period <= 8; 0 <= startMinute <= 59;
-     * 1 <= duration <= 60
-     */
-    private void reserveBlock(int period, int startMinute, int duration) {
-        /* implementation not shown */ }
-
-    /**
-     * Searches for the first block of duration free minutes during period, as
-     * described in
-     * part (a). Returns the first minute in the block if such a block is found or
-     * returns -1 if no
-     * such block is found.
-     * Preconditions: 1 <= period <= 8; 1 <= duration <= 60
-     */
-    public int findFreeBlock(int period, int duration) {
-        /* to be implemented in part (a) */ }
-
-    /**
-     * Searches periods from startPeriod to endPeriod, inclusive, for a block
-     * of duration free minutes, as described in part (b). If such a block is found,
-     * calls reserveBlock to reserve the block of minutes and returns true;
-     * otherwise
-     * returns false.
-     * Preconditions: 1 <= startPeriod <= endPeriod <= 8; 1 <= duration <= 60
-     */
-    public boolean makeAppointment(int startPeriod, int endPeriod, int duration){
-     /* to be implemented in part (b) */ }
-
-    // There may be instance variables, constructors, and methods that are not shown.
-
 }
